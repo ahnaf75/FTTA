@@ -5,5 +5,13 @@ dependencies:
   - python=3.8
   - pip
   - lightgbm=3.3
+  # --- The "Safe" Jupyter Stack ---
+  - jupyterlab
+  - ipykernel
+  - ipython
+  - notebook
+  - terminado
+  - pywinpty
+  # --------------------------------
   - pip:
     - -r requirements.txt
