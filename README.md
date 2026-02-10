@@ -72,7 +72,28 @@ If you want to explore FTTA on more datasets, some key files may be helpful to y
 
 The availability of dataset is the same as TableShift benchmark. If you want to add more dataset, see the guidelines of TableShift benchmark at [tableshift.org](https://tableshift.org/index.html).
 
-### 5. Q&A
+
+### 5. Federated FTTA (FedAvg / FedProx / pFedGraph / FedAmp)
+
+This repository now includes a federated orchestration layer for FTTA in `src/tableshift/FTTA_src/federated.py`. The server supports:
+
+- `fedavg`
+- `fedprox`
+- `pfedgraph`
+- `fedamp`
+
+and a configurable `num_clients` setting.
+
+Run the federated entrypoint with:
+
+```shell
+cd src
+python examples/run_federated_ftta.py   --experiment diabetes_readmission   --model mlp   --algorithm fedavg   --num_clients 8
+```
+
+You can switch `--algorithm` to `fedprox`, `pfedgraph`, or `fedamp`, and vary `--num_clients` as needed.
+
+### 6. Q&A
 
 If you have any questions, feel free to contact us at [yuky@lamda.nju.edu.cn](mailto:yuky@lamda.nju.edu.cn) or submit an issue here.
 
