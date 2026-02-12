@@ -17,7 +17,6 @@ import numpy as np
 import pandas as pd
 import requests
 
-import tableshift.datasets
 from tableshift.core import utils
 from tableshift.datasets.acs import ACS_STATE_LIST, preprocess_acs, \
     get_acs_data_source, ACS_TASK_CONFIGS, acs_data_to_df
@@ -26,9 +25,11 @@ from tableshift.datasets.adult import ADULT_RESOURCES, ADULT_FEATURE_NAMES, \
     preprocess_adult
 from tableshift.datasets.anes import preprocess_anes
 from tableshift.datasets.automl_multimodal_benchmark import preprocess_automl
+from tableshift.datasets.assistments import preprocess_assistments
 from tableshift.datasets.brfss import preprocess_brfss, align_brfss_features
 from tableshift.datasets.catboost_benchmarks import preprocess_appetency, \
     preprocess_click, preprocess_kick
+from tableshift.datasets.college_scorecard import preprocess_college_scorecard
 from tableshift.datasets.communities_and_crime import CANDC_RESOURCES, \
     preprocess_candc, CANDC_INPUT_FEATURES
 from tableshift.datasets.compas import COMPAS_RESOURCES, preprocess_compas
@@ -1357,7 +1358,7 @@ class AssistmentsDataSource(KaggleDataSource):
     def __init__(self, **kwargs):
         super().__init__(
             kaggle_dataset_name="nicolaswattiez/skillbuilder-data-2009-2010",
-            preprocess_fn=tableshift.datasets.preprocess_assistments, **kwargs)
+            preprocess_fn=preprocess_assistments, **kwargs)
 
     def _load_data(self) -> pd.DataFrame:
         logging.info(
@@ -1382,7 +1383,7 @@ class CollegeScorecardDataSource(KaggleDataSource):
     def __init__(self, **kwargs):
         super().__init__(
             kaggle_dataset_name="kaggle/college-scorecard",
-            preprocess_fn=tableshift.datasets.preprocess_college_scorecard,
+            preprocess_fn=preprocess_college_scorecard,
             **kwargs)
 
     def _load_data(self) -> pd.DataFrame:

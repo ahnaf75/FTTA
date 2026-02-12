@@ -149,7 +149,8 @@ def _train_pytorch(estimator: SklearnStylePytorchModel, dset: TabularDataset,
                   eval_loaders=eval_loaders,
                   tune_report_split=tune_report_split,
                   max_examples_per_epoch=dset.n_train,
-                  exp=config['exp'])
+                  exp=config['exp'],
+                  tta_method=config.get("tta_method", "ftta"))
     return estimator
 
 

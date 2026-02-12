@@ -1,0 +1,10 @@
+models:
+  default:
+    tta_method: ftta
+
+  ft_transformer:
+    checkpoint_subdir: fttrans
+  tabtransformer:
+    checkpoint_subdir: tabtrans
+  mlp:
+    checkpoint_subdir: mlp

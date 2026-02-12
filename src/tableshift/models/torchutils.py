@@ -1,17 +1,19 @@
 from typing import Union, Dict, Tuple
 
+import logging
 import numpy as np
 import rtdl
 import scipy
-import copy
 import sklearn
 import torch
 from tab_transformer_pytorch import TabTransformer
 from tqdm import tqdm
-from sklearn.metrics import pairwise_distances
-from torch.nn import functional as F
 from typing import Optional
 
+from ftta.tta import (
+    evaluate_tta_with_registry,
+    get_predictions_and_labels_tta_with_registry,
+)
 from tableshift.third_party.saint.models import SAINT
 
 
@@ -114,64 +116,40 @@ def get_predictions_and_labels(model, loader, device=None, as_logits=False) -> T
         prediction = scipy.special.expit(prediction)
     return prediction, target
 
-import tableshift.FTTA_src.FTTA as FTTA
 @torch.enable_grad()
 def get_predictions_and_labels_tta_ftta(model, loader, device, exp):
-    #tta params  assis mlp 1e-3 tab1e-5
-    optimizer = torch.optim.SGD
-    prediction = []
-    label = []
-    target = []
-    if exp == 'anes':
-        source_y = torch.tensor([1 - 0.691, 0.691]).to(device)
-    elif exp == 'heloc':
-        source_y = torch.tensor([1 - 0.24, 0.24]).to(device)
-    elif exp == 'assistments':
-        source_y = torch.tensor([1 - 0.694, 0.694]).to(device)
-    elif exp == 'diabetes_readmission':
-        source_y = torch.tensor([1 - 0.42, 0.42]).to(device)
-    elif exp == 'brfss_blood_pressure':
-        source_y = torch.tensor([1- 0.403, 0.403]).to(device)
-    else:
-        print('please check exp name')
-        raise ValueError("exp wrong")
-    modelname = model.__class__.__name__
+    return get_predictions_and_labels_tta_with_registry(
+        model=model,
+        loader=loader,
+        device=device,
+        exp=exp,
+        method_name="ftta",
+    )
 
-    ftta = FTTA.FTTA(model, optimizer, prior = source_y, lr_list=[1e-5,5e-4,1e-4], device=device)
 
-    for batch in tqdm(loader, desc=f"{modelname}:getpreds"):
-        batch_x, batch_y, _, _ = unpack_batch(batch)
-        batch_x = batch_x.float().to(device)
-        batch_y = batch_y.float().to(device)
-        outputs = ftta(batch_x)
-        prediction.append(outputs)
-        label.append(batch_y)
-    prediction = torch.cat(prediction).squeeze().cpu().numpy()
-    target = torch.cat(label).squeeze().cpu().numpy()
-    return prediction, target
-import logging
-def evaluate_tta(model, loader, device, split, exp:Optional[str] = None):
-    if split == 'train':
-        logging.info(f'TTA testing, only ood score will be display, split:{split} skipping')
+def evaluate_tta(
+    model,
+    loader,
+    device,
+    split,
+    exp: Optional[str] = None,
+    tta_method: str = "ftta",
+):
+    if split == "train":
+        logging.info(f"TTA testing, only ood score will be display, split:{split} skipping")
         return 0
-    if split == 'ood_test':
-        with torch.enable_grad():
-            model_ense = copy.deepcopy(model)
-            model_ense.train()
-            pre, tar = get_predictions_and_labels_tta_ftta(model_ense, loader, device, exp)
-            pre = np.round(pre)
-            score = sklearn.metrics.accuracy_score(tar, pre)
-            print('\n', 'FTTA: acc ', '\n', score, '\n')
-        with torch.no_grad():
-            model.eval()
-            pre, tar = get_predictions_and_labels(model, loader, device)
-            pre = np.round(pre)
-            score = sklearn.metrics.accuracy_score(tar, pre)
-            print('\n', 'Unadapt: acc ', '\n', score, '\n')
-    else:
-        logging.info(f'TTA testing, only ood score will be display, split:{split} skipping')
+    if split != "ood_test":
+        logging.info(f"TTA testing, only ood score will be display, split:{split} skipping")
         return 0
-    return score
+
+    return evaluate_tta_with_registry(
+        model=model,
+        loader=loader,
+        device=device,
+        split=split,
+        exp=exp,
+        method_name=tta_method,
+    )
 
 def evaluate(model, loader, device, split, exp:Optional[str] = None):
     with torch.no_grad():

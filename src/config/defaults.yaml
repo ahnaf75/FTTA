@@ -1,0 +1,6 @@
+runtime:
+  cache_dir: tmp
+  debug_experiment: _debug
+  model_root: ./models
+  tta_method: ftta
+  log_level: DEBUG

@@ -1,13 +1,18 @@
 from dataclasses import dataclass
 from typing import Sequence, Optional, Any, Iterator
 
-from tableshift.configs.benchmark_configs import ExperimentConfig
+from tableshift.configs import ExperimentConfig
 from tableshift.configs.experiment_defaults import DEFAULT_ID_TEST_SIZE, \
     DEFAULT_OOD_VAL_SIZE, DEFAULT_ID_VAL_SIZE, DEFAULT_RANDOM_STATE
 from tableshift.core import Grouper, PreprocessorConfig, DomainSplitter
-from tableshift.datasets import ACS_REGIONS, ACS_YEARS, \
-    BRFSS_YEARS, CANDC_STATE_LIST, NHANES_YEARS, ANES_YEARS, \
-    ANES_REGIONS, MIMIC_EXTRACT_SHARED_FEATURES, MIMIC_EXTRACT_STATIC_FEATURES
+from tableshift.datasets.acs import ACS_REGIONS, ACS_YEARS
+from tableshift.datasets.anes import ANES_REGIONS, ANES_YEARS
+from tableshift.datasets.brfss import BRFSS_YEARS
+from tableshift.datasets.communities_and_crime import CANDC_STATE_LIST
+from tableshift.datasets.mimic_extract import MIMIC_EXTRACT_STATIC_FEATURES
+from tableshift.datasets.mimic_extract_feature_lists import \
+    MIMIC_EXTRACT_SHARED_FEATURES
+from tableshift.datasets.nhanes import NHANES_YEARS
 from tableshift.datasets.assistments import SCHOOL_IDS
 
 

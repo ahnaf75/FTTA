@@ -51,9 +51,23 @@ class SklearnStylePytorchModel(ABC, nn.Module):
         """sklearn-compatible probability prediction function."""
         raise
 
-    def evaluate(self, eval_loaders: Dict[str, DataLoader], device, exp: Optional[str] = None, tta: bool = False):
+    def evaluate(
+        self,
+        eval_loaders: Dict[str, DataLoader],
+        device,
+        exp: Optional[str] = None,
+        tta: bool = False,
+        tta_method: str = "ftta",
+    ):
         if tta:
-             return {str(split): evaluate_tta(self, loader, device, split, exp)
+             return {str(split): evaluate_tta(
+                 self,
+                 loader,
+                 device,
+                 split,
+                 exp,
+                 tta_method=tta_method,
+             )
                 for split, loader in eval_loaders.items()}
         else:
             return {str(split): evaluate(self, loader, device, split, exp)
@@ -91,7 +105,9 @@ class SklearnStylePytorchModel(ABC, nn.Module):
             eval_loaders: Optional[Dict[str, DataLoader]] = None,
             tune_report_split: Optional[str] = None,
             max_examples_per_epoch: Optional[int] = None,
-            exp: Optional[str] = None) -> dict:
+            exp: Optional[str] = None,
+            tta_method: str = "ftta",
+    ) -> dict:
         fit_metrics = defaultdict(list)
 
         if tune_report_split:
@@ -101,7 +117,13 @@ class SklearnStylePytorchModel(ABC, nn.Module):
         if n_epochs == 0:
             tta = True
             logging.info("Start TAT adaptation")
-            metrics = self.evaluate(eval_loaders, device=device, exp=exp, tta=tta)
+            metrics = self.evaluate(
+                eval_loaders,
+                device=device,
+                exp=exp,
+                tta=tta,
+                tta_method=tta_method,
+            )
             log_str = f'Epoch {0:03d} ' + ' | '.join(
                 f"{k} score: {v:.4f}" for k, v in metrics.items())
             logging.info(log_str)

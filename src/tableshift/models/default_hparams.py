@@ -187,6 +187,8 @@ def get_default_config(model: str, dset: TabularDataset) -> dict:
         config["batch_size"] = DEFAULT_BATCH_SIZE
     if "n_epochs" not in config and model_is_pt:
         config["n_epochs"] = 0
+    if model_is_pt and "tta_method" not in config:
+        config["tta_method"] = "ftta"
 
     if model == "saint" and d_in > 100:
         # same batch size setting logic as in SAINT code:
