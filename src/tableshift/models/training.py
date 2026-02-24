@@ -150,7 +150,18 @@ def _train_pytorch(estimator: SklearnStylePytorchModel, dset: TabularDataset,
                   tune_report_split=tune_report_split,
                   max_examples_per_epoch=dset.n_train,
                   exp=config['exp'],
-                  tta_method=config.get("tta_method", "ftta"))
+                  tta_method=config.get("tta_method", "ftta"),
+                  tent_lr=config.get("tent_lr", 1e-3),
+                  tent_steps=config.get("tent_steps", 1),
+                  tent_eps=config.get("tent_eps", 1e-8),
+                  sar_lr=config.get("sar_lr", 1e-3),
+                  sar_steps=config.get("sar_steps", 1),
+                  sar_rho=config.get("sar_rho", 0.05),
+                  sar_entropy_margin=config.get("sar_entropy_margin", 0.4),
+                  eata_lr=config.get("eata_lr", 1e-3),
+                  eata_steps=config.get("eata_steps", 1),
+                  eata_entropy_margin=config.get("eata_entropy_margin", 0.4),
+                  eata_diversity_margin=config.get("eata_diversity_margin", 0.05))
     return estimator
 
 

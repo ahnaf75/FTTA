@@ -58,17 +58,44 @@ class SklearnStylePytorchModel(ABC, nn.Module):
         exp: Optional[str] = None,
         tta: bool = False,
         tta_method: str = "ftta",
+        tent_lr: float = 1e-3,
+        tent_steps: int = 1,
+        tent_eps: float = 1e-8,
+        sar_lr: float = 1e-3,
+        sar_steps: int = 1,
+        sar_rho: float = 0.05,
+        sar_entropy_margin: float = 0.4,
+        eata_lr: float = 1e-3,
+        eata_steps: int = 1,
+        eata_entropy_margin: float = 0.4,
+        eata_diversity_margin: float = 0.05,
     ):
         if tta:
-             return {str(split): evaluate_tta(
-                 self,
-                 loader,
-                 device,
-                 split,
-                 exp,
-                 tta_method=tta_method,
-             )
-                for split, loader in eval_loaders.items()}
+            metrics = {}
+            for split, loader in eval_loaders.items():
+                key = str(split)
+                metrics[key] = evaluate_tta(
+                    self,
+                    loader,
+                    device,
+                    split,
+                    exp,
+                    tta_method=tta_method,
+                    tent_lr=tent_lr,
+                    tent_steps=tent_steps,
+                    tent_eps=tent_eps,
+                    sar_lr=sar_lr,
+                    sar_steps=sar_steps,
+                    sar_rho=sar_rho,
+                    sar_entropy_margin=sar_entropy_margin,
+                    eata_lr=eata_lr,
+                    eata_steps=eata_steps,
+                    eata_entropy_margin=eata_entropy_margin,
+                    eata_diversity_margin=eata_diversity_margin,
+                )
+                if key == "ood_test" and hasattr(self, "last_unadapt_ood_score"):
+                    metrics["unadapt_ood_test"] = float(self.last_unadapt_ood_score)
+            return metrics
         else:
             return {str(split): evaluate(self, loader, device, split, exp)
                 for split, loader in eval_loaders.items()}
@@ -107,6 +134,17 @@ class SklearnStylePytorchModel(ABC, nn.Module):
             max_examples_per_epoch: Optional[int] = None,
             exp: Optional[str] = None,
             tta_method: str = "ftta",
+            tent_lr: float = 1e-3,
+            tent_steps: int = 1,
+            tent_eps: float = 1e-8,
+            sar_lr: float = 1e-3,
+            sar_steps: int = 1,
+            sar_rho: float = 0.05,
+            sar_entropy_margin: float = 0.4,
+            eata_lr: float = 1e-3,
+            eata_steps: int = 1,
+            eata_entropy_margin: float = 0.4,
+            eata_diversity_margin: float = 0.05,
     ) -> dict:
         fit_metrics = defaultdict(list)
 
@@ -123,6 +161,17 @@ class SklearnStylePytorchModel(ABC, nn.Module):
                 exp=exp,
                 tta=tta,
                 tta_method=tta_method,
+                tent_lr=tent_lr,
+                tent_steps=tent_steps,
+                tent_eps=tent_eps,
+                sar_lr=sar_lr,
+                sar_steps=sar_steps,
+                sar_rho=sar_rho,
+                sar_entropy_margin=sar_entropy_margin,
+                eata_lr=eata_lr,
+                eata_steps=eata_steps,
+                eata_entropy_margin=eata_entropy_margin,
+                eata_diversity_margin=eata_diversity_margin,
             )
             log_str = f'Epoch {0:03d} ' + ' | '.join(
                 f"{k} score: {v:.4f}" for k, v in metrics.items())

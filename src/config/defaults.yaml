@@ -3,4 +3,17 @@ runtime:
   debug_experiment: _debug
   model_root: ./models
   tta_method: ftta
+  num_seeds: 1
+  seed_start: 0
+  tent_lr: 0.001
+  tent_steps: 1
+  tent_eps: 1.0e-08
+  sar_lr: 0.001
+  sar_steps: 1
+  sar_rho: 0.05
+  sar_entropy_margin: 0.4
+  eata_lr: 0.001
+  eata_steps: 1
+  eata_entropy_margin: 0.4
+  eata_diversity_margin: 0.05
   log_level: DEBUG

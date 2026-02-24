@@ -134,6 +134,17 @@ def evaluate_tta(
     split,
     exp: Optional[str] = None,
     tta_method: str = "ftta",
+    tent_lr: float = 1e-3,
+    tent_steps: int = 1,
+    tent_eps: float = 1e-8,
+    sar_lr: float = 1e-3,
+    sar_steps: int = 1,
+    sar_rho: float = 0.05,
+    sar_entropy_margin: float = 0.4,
+    eata_lr: float = 1e-3,
+    eata_steps: int = 1,
+    eata_entropy_margin: float = 0.4,
+    eata_diversity_margin: float = 0.05,
 ):
     if split == "train":
         logging.info(f"TTA testing, only ood score will be display, split:{split} skipping")
@@ -149,6 +160,19 @@ def evaluate_tta(
         split=split,
         exp=exp,
         method_name=tta_method,
+        method_kwargs={
+            "tent_lr": tent_lr,
+            "tent_steps": tent_steps,
+            "tent_eps": tent_eps,
+            "sar_lr": sar_lr,
+            "sar_steps": sar_steps,
+            "sar_rho": sar_rho,
+            "sar_entropy_margin": sar_entropy_margin,
+            "eata_lr": eata_lr,
+            "eata_steps": eata_steps,
+            "eata_entropy_margin": eata_entropy_margin,
+            "eata_diversity_margin": eata_diversity_margin,
+        },
     )
 
 def evaluate(model, loader, device, split, exp:Optional[str] = None):
